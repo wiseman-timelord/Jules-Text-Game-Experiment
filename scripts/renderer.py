@@ -111,6 +111,45 @@ class Renderer:
         print(output, end='', flush=True)
 
 
+    def draw_keys_screen(self):
+        """
+        Draws a screen displaying the game's keybindings.
+        """
+        output = self.term.home + self.term.clear
+
+        # Define the content to be displayed
+        title = "--- KEYBINDINGS ---"
+        keys = [
+            " k : Toggle this Keys Screen",
+            " m : Toggle World Map",
+            " r : Restart the Game",
+            " q : Quit the Game",
+            "",
+            " Arrow Keys : Move Player"
+        ]
+
+        # Center the content block on the screen
+        start_y = (self.term.height - len(keys) - 2) // 2
+
+        # Draw the title
+        title_x = (self.term.width - len(title)) // 2
+        output += self.term.move_xy(title_x, start_y) + self.term.bold(title)
+
+        # Draw each keybinding line
+        for i, line in enumerate(keys):
+            line_x = (self.term.width - len(line)) // 2
+            output += self.term.move_xy(line_x, start_y + 2 + i) + line
+
+        # Draw a UI hint at the bottom
+        height, width = self.term.height, self.term.width
+        ui_text = "Press 'k' to return to the game."
+        if len(ui_text) >= width:
+            ui_text = ui_text[:width - 1]
+        output += self.term.move_xy(0, height - 1) + self.term.on_black(ui_text)
+
+        print(output, end='', flush=True)
+
+
 # This file is a module and is not intended to be run directly.
 # Its functionality will be tested by integrating it into the main game loop.
 if __name__ == '__main__':
