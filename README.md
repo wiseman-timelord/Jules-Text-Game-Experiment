@@ -11,6 +11,41 @@ This project is an experiment in creating a procedurally generating text adventu
 - **Planned Biomes:** The architecture is designed to support different environments, with plans for Urban, Outlands, and Wasteland biomes.
 - **Standalone Installation:** Includes simple installer and validator scripts to set up the environment and dependencies.
 
+### Preview
+- The installer currently...
+```
+--- Running Full Installation and Setup ---
+1. Managing 'data\settings.json'...
+  - Removed existing 'data\settings.json'.
+  - Created clean 'data\settings.json'.
+----------------------------------------
+2. Cleaning up old virtual environment ('.venv')...
+  - No existing '.venv' directory found. Skipping.
+----------------------------------------
+3. Creating new virtual environment...
+  - Creating .venv directory... OK
+----------------------------------------
+4. Upgrading pip...
+  - Upgrading pip to the latest version... OK
+----------------------------------------
+5. Installing required packages...
+  - Installing blessed, perlin-noise... OK
+----------------------------------------
+
+--- Installation Report ---
+All steps completed successfully!
+Virtual environment created at: C:\Game_Files\Jules-Text-Game-Experiment\Jules-T
+ext-Game-Experiment-feature-initial-game-setup 003\Jules-Text-Game-Experiment-fe
+ature-initial-game-setup\.venv
+Required packages installed: blessed, perlin-noise
+You can now run the game using option 1 from the main menu.
+---------------------------
+
+
+"Installation process complete. Press any key to return to the menu."
+```
+
+
 ## Gamekeys listed...
 ```
 k = keys
