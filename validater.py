@@ -1,30 +1,48 @@
 import sys
+import importlib
 
 # A list of all required packages for the game.
+# The name here must match the module name used for import.
 REQUIRED_PACKAGES = ["blessed", "perlin_noise"]
 
-def validate_installation():
+def check_dependencies():
     """
-    Validates that all required modules can be imported.
+    Checks if all required Python modules can be imported.
+
+    This function is designed to be imported by other scripts and does not
+    print any output, returning a simple boolean status.
+
+    Returns:
+        bool: True if all dependencies are available, False otherwise.
     """
-    print("Validating required modules...")
-    all_found = True
-    for package in REQUIRED_PACKAGES:
+    for package_name in REQUIRED_PACKAGES:
         try:
-            # The 'import' statement uses the module name, which can sometimes
-            # differ from the package name (e.g., perlin-noise vs perlin_noise).
-            __import__(package)
-            print(f"  [OK] '{package}' module found.")
+            importlib.import_module(package_name)
         except ImportError:
-            print(f"  [ERROR] '{package}' module not found.")
+            return False
+    return True
+
+def run_validation_and_print():
+    """
+    Runs the validation and prints a user-friendly report to the console.
+    """
+    print("--- Running Validation ---")
+    all_found = True
+    for package_name in REQUIRED_PACKAGES:
+        try:
+            importlib.import_module(package_name)
+            print(f"  [OK] '{package_name}' module found.")
+        except ImportError:
+            print(f"  [ERROR] '{package_name}' module not found.")
             all_found = False
 
-    return all_found
+    print("-" * 26)
+    if all_found:
+        print("Validation successful! Environment is set up correctly.")
+    else:
+        print("\nValidation failed. Please run the installer script (installer.py).")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
-    print("--- Running Validation ---")
-    if validate_installation():
-        print("\nEnvironment is set up correctly.")
-    else:
-        print("\nValidation failed. Please run the installer script (installer.py) to install missing packages.")
-        sys.exit(1)
+    run_validation_and_print()
