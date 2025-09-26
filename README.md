@@ -12,35 +12,63 @@ This project is an experiment in creating a procedurally generating text adventu
 - **Standalone Installation:** Includes simple installer and validator scripts to set up the environment and dependencies.
 
 ### Preview
-- The installer currently...
+- We now have mostly done the, batch, bash, installer, here is the installer currently...
 ```
---- Running Full Installation and Setup ---
-1. Managing 'data\settings.json'...
-  - Removed existing 'data\settings.json'.
-  - Created clean 'data\settings.json'.
-----------------------------------------
-2. Cleaning up old virtual environment ('.venv')...
-  - No existing '.venv' directory found. Skipping.
-----------------------------------------
-3. Creating new virtual environment...
-  - Creating .venv directory... OK
-----------------------------------------
-4. Upgrading pip...
-  - Upgrading pip to the latest version... OK
-----------------------------------------
-5. Installing required packages...
-  - Installing blessed, perlin-noise... OK
-----------------------------------------
+===============================================================================
+    Jules' Text Adventure Game - Installation
+===============================================================================
+
+Managing 'data\settings.json'...
+Replaced 'data\settings.json'.
+Cleaning up old virtual environment ('.venv')...
+Removed existing '.venv' directory.
+Creating new virtual environment...
+.venv directory Created... OK
+
+Upgrading pip to latest version...
+Requirement already satisfied: pip in c:\game_files\jules-text-game-experiment\j
+ules-text-game-experiment-feature-initial-game-setup 004\jules-text-game-experim
+ent-feature-initial-game-setup\.venv\lib\site-packages (24.0)
+Collecting pip
+  Using cached pip-25.2-py3-none-any.whl.metadata (4.7 kB)
+Using cached pip-25.2-py3-none-any.whl (1.8 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 24.0
+    Uninstalling pip-24.0:
+      Successfully uninstalled pip-24.0
+Successfully installed pip-25.2
+
+Installing requirements...
+Collecting blessed
+  Using cached blessed-1.22.0-py2.py3-none-any.whl.metadata (13 kB)
+Collecting perlin-noise
+  Using cached perlin_noise-1.14-py3-none-any.whl.metadata (472 bytes)
+Collecting wcwidth>=0.1.4 (from blessed)
+  Using cached wcwidth-0.2.14-py2.py3-none-any.whl.metadata (15 kB)
+Collecting jinxed>=1.1.0 (from blessed)
+  Using cached jinxed-1.3.0-py2.py3-none-any.whl.metadata (4.7 kB)
+Collecting ansicon (from jinxed>=1.1.0->blessed)
+  Using cached ansicon-1.89.0-py2.py3-none-any.whl.metadata (2.8 kB)
+Using cached blessed-1.22.0-py2.py3-none-any.whl (85 kB)
+Using cached perlin_noise-1.14-py3-none-any.whl (4.6 kB)
+Using cached jinxed-1.3.0-py2.py3-none-any.whl (33 kB)
+Using cached wcwidth-0.2.14-py2.py3-none-any.whl (37 kB)
+Using cached ansicon-1.89.0-py2.py3-none-any.whl (63 kB)
+Installing collected packages: ansicon, wcwidth, perlin-noise, jinxed, blessed
+Successfully installed ansicon-1.89.0 blessed-1.22.0 jinxed-1.3.0 perlin-noise-1
+.14 wcwidth-0.2.14
 
 --- Installation Report ---
 All steps completed successfully!
 Virtual environment created at: C:\Game_Files\Jules-Text-Game-Experiment\Jules-T
-ext-Game-Experiment-feature-initial-game-setup 003\Jules-Text-Game-Experiment-fe
+ext-Game-Experiment-feature-initial-game-setup 004\Jules-Text-Game-Experiment-fe
 ature-initial-game-setup\.venv
 Required packages installed: blessed, perlin-noise
 You can now run the game using option 1 from the main menu.
----------------------------
+-----------------------------------------------------------
 
+-------------------------------------------------------------------------------
 
 "Installation process complete. Press any key to return to the menu."
 ```
