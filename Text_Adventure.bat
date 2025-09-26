@@ -1,4 +1,8 @@
 @echo off
+cd /d "%~dp0" 2>nul || (
+    echo  [ERROR] Cannot access script directory.
+    pause & exit /b 1
+)
 REM This batch file provides a menu-driven interface for the Text Adventure Game.
 
 :menu
