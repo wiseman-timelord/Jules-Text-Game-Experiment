@@ -1,4 +1,5 @@
 import blessed
+import time
 
 # Import the core components of the game
 from map import Map, CHUNK_WIDTH, CHUNK_HEIGHT
@@ -28,6 +29,18 @@ def main():
 
     # Use blessed's context managers for a clean, fullscreen terminal interface
     with term.fullscreen(), term.cbreak(), term.hidden_cursor():
+        # --- Display Game Header ---
+        header_line = "=" * term.width
+        title = "Jules' Text Adventure Game"
+
+        print(term.home + term.clear)
+        print(header_line)
+        print(title.center(term.width))
+        print(header_line)
+        print("\n") # One blank line after header
+        print("Loading...".center(term.width))
+        time.sleep(2) # Pause to let the user see the header
+
         while running:
             # Decide which view to draw based on the current state.
             # The keys screen takes precedence over the map screen.
@@ -47,7 +60,6 @@ def main():
             # Handle global keys first
             if key == 'k':
                 keys_view_active = not keys_view_active
-                # Ensure map view is off when keys view is activated
                 if keys_view_active:
                     map_view_active = False
             elif key == 'q':
@@ -58,7 +70,6 @@ def main():
                 keys_view_active = False
             elif key == 'm':
                 map_view_active = not map_view_active
-                # Ensure keys view is off when map view is activated
                 if map_view_active:
                     keys_view_active = False
 
@@ -77,12 +88,14 @@ def start():
     """
     The entry point for the game, called by launcher.py.
     """
-    print("Starting game...")
+    # The launcher is now called from the batch menu, so we don't need a print here.
     try:
         main()
-        print("Game exited normally.")
+        # "Game exited" message is handled by the batch menu.
     except Exception as e:
-        print(f"An error occurred during game execution: {e}")
+        print(f"\nAn unexpected error occurred during game execution: {e}")
+        if 'win32' in sys.platform:
+            os.system("pause")
 
 if __name__ == "__main__":
     start()

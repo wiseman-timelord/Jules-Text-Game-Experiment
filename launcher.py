@@ -1,44 +1,29 @@
 import sys
 import os
 
-# This allows the launcher to find the 'scripts' and 'validater' modules
-sys.path.append(os.path.dirname(__file__))
-from validater import check_dependencies
+# This allows the launcher to find the 'scripts' module.
+# We must add the root directory to the path for this to work correctly.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def main():
     """
-    The main entry point for the game.
-    This function validates the environment before attempting to run the game.
+    The main entry point for the game. This function simply
+    imports and runs the main game module.
     """
-    print("Launcher is running...")
-
-    # --- Pre-launch Validation ---
-    print("Checking for required packages...")
-    if not check_dependencies():
-        print("\n[ERROR] Required packages are missing.")
-        print("Please run 'installer.py' to set up the environment, then try again.")
-        # Add a pause for Windows users running the .bat file
-        if sys.platform == "win32":
-            os.system("pause")
-        sys.exit(1)
-
-    print("All packages found. Attempting to start the game.")
-
     try:
-        # We can now be more confident that the game will import correctly.
         from scripts import game
         game.start()
     except ImportError as e:
-        print(f"\n[CRITICAL ERROR] Failed to import game modules: {e}")
-        print("The game files appear to be corrupted or missing. Please check your installation.")
-        if sys.platform == "win32":
+        print("\n[CRITICAL ERROR] Failed to launch the game.")
+        print(f"A required module could not be found: {e}")
+        print("This is likely due to missing dependencies.")
+        print("Please run option 3, 'Install Requirements', from the main menu and try again.")
+        if 'win32' in sys.platform:
             os.system("pause")
-        sys.exit(1)
     except Exception as e:
         print(f"\nAn unexpected error occurred during gameplay: {e}")
-        if sys.platform == "win32":
+        if 'win32' in sys.platform:
             os.system("pause")
-        sys.exit(1)
 
 if __name__ == "__main__":
     main()
