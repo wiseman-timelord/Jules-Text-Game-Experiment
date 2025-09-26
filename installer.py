@@ -17,18 +17,34 @@ else:
     VENV_PYTHON = os.path.join(VENV_DIR, "bin", "python")
     VENV_PIP = os.path.join(VENV_DIR, "bin", "pip")
 
-def run_command(command, description):
-    """Runs a command and handles errors, printing a status message."""
+def run_silent_command(command, description):
+    """Runs a command silently and handles errors, printing a status message."""
     print(f"  - {description}... ", end="")
     try:
         subprocess.run(command, check=True, capture_output=True, text=True)
         print("OK")
         return True
-    except subprocess.CalledProcessError as e:
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
         print("FAILED")
-        print("\n--- ERROR ---")
-        print(e.stderr)
-        print("---------------")
+        if isinstance(e, subprocess.CalledProcessError):
+            print("\n--- ERROR ---")
+            print(e.stderr)
+            print("---------------")
+        return False
+
+def run_verbose_command(command, description):
+    """Runs a command and streams its output to the console."""
+    print(f"  - {description}:")
+    print("-" * 20)
+    try:
+        # By not capturing output, it streams directly to the console.
+        subprocess.run(command, check=True)
+        print("-" * 20)
+        print("  - Command successful.")
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("\n--- COMMAND FAILED ---")
+        # The error is already printed by the subprocess, so we just note the failure.
         return False
 
 def manage_settings_file():
@@ -65,7 +81,7 @@ def clean_venv():
 def create_venv():
     """Step 3: Create the virtual environment."""
     print("3. Creating new virtual environment...")
-    return run_command(
+    return run_silent_command(
         [sys.executable, "-m", "venv", VENV_DIR],
         "Creating .venv directory"
     )
@@ -73,7 +89,7 @@ def create_venv():
 def upgrade_pip():
     """Step 3 (cont.): Upgrade pip in the new virtual environment."""
     print("4. Upgrading pip...")
-    return run_command(
+    return run_verbose_command(
         [VENV_PYTHON, "-m", "pip", "install", "--upgrade", "pip"],
         "Upgrading pip to the latest version"
     )
@@ -81,7 +97,7 @@ def upgrade_pip():
 def install_requirements():
     """Step 4: Install required libraries into the virtual environment."""
     print("5. Installing required packages...")
-    return run_command(
+    return run_verbose_command(
         [VENV_PIP, "install"] + REQUIREMENTS,
         f"Installing {', '.join(REQUIREMENTS)}"
     )
@@ -98,18 +114,25 @@ def main():
         install_requirements
     ]
 
+    all_successful = True
     for i, step_func in enumerate(steps, 1):
         if not step_func():
-            print(f"\n[ERROR] Step {i} failed. Aborting installation.")
-            sys.exit(1)
-        print("-" * 40)
+            print(f"\n[ERROR] Step {i} ('{step_func.__name__}') failed. Aborting installation.")
+            all_successful = False
+            break
+        print("\n")
 
-    print("\n--- Installation Report ---")
-    print("All steps completed successfully!")
-    print(f"Virtual environment created at: {os.path.abspath(VENV_DIR)}")
-    print(f"Required packages installed: {', '.join(REQUIREMENTS)}")
-    print("You can now run the game using option 1 from the main menu.")
+    print("--- Installation Report ---")
+    if all_successful:
+        print("All steps completed successfully!")
+        print(f"Virtual environment created at: {os.path.abspath(VENV_DIR)}")
+        print(f"Required packages installed: {', '.join(REQUIREMENTS)}")
+        print("You can now run the game using option 1 from the main menu.")
+    else:
+        print("Installation failed. Please review the errors above.")
     print("---------------------------\n")
+    if not all_successful:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
