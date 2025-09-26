@@ -1,7 +1,8 @@
 import random
+from perlin_noise import PerlinNoise
 
 # Import the visual assets from the central art repository.
-from ascii_art import ROCK, BUSH, WALL, EMPTY
+from ascii_art import ROCK, BUSH, WALL, EMPTY, WATER
 
 # Define constants for chunk dimensions
 CHUNK_WIDTH = 80
@@ -13,14 +14,23 @@ class Map:
     Manages the world map, including the procedural generation and storage of map chunks.
     """
 
-    def __init__(self):
+    def __init__(self, seed=None):
         """
         Initializes the map. A dictionary `self.chunks` will store the data
         for generated chunks, with (x, y) coordinates as keys.
+
+        Args:
+            seed (int, optional): A seed for the Perlin Noise generator to ensure
+                                  reproducible maps. Defaults to None (random).
         """
+        if seed is None:
+            seed = random.randint(0, 100000)
+
+        # Initialize Perlin noise generators for different features.
+        # Using different seeds and octaves creates more varied terrain.
+        self.noise = PerlinNoise(octaves=4, seed=seed)
+        self.feature_noise = PerlinNoise(octaves=8, seed=seed + 1)
         self.chunks = {}
-        # We don't generate the starting chunk here, we'll let the game do it
-        # when it's ready.
 
     def get_chunk(self, chunk_x, chunk_y):
         """
@@ -30,22 +40,48 @@ class Map:
         function, stores the result, and then returns it.
         """
         if (chunk_x, chunk_y) not in self.chunks:
-            # This is a new, unexplored area, so we generate it.
             self.chunks[(chunk_x, chunk_y)] = self._generate_chunk(chunk_x, chunk_y)
 
-        # Return the stored chunk data.
         return self.chunks[(chunk_x, chunk_y)]
 
     def _generate_chunk(self, chunk_x, chunk_y):
         """
-        Generates a new map chunk filled with procedural content.
-        For now, it's a bordered area with random rocks and bushes.
+        Generates a new map chunk using Perlin noise for natural terrain.
         """
-        # Start with a chunk filled with empty tiles.
         chunk_data = [[EMPTY for _ in range(CHUNK_WIDTH)] for _ in range(CHUNK_HEIGHT)]
 
-        # Create a solid border around the chunk. This helps in debugging and
-        # will later serve as the boundary for player movement.
+        # Scale determines the "zoom" level of the noise. Smaller values = larger features.
+        scale = 0.05
+
+        for y in range(CHUNK_HEIGHT):
+            for x in range(CHUNK_WIDTH):
+                # Calculate global coordinates to ensure seamless chunk transitions.
+                global_x = (chunk_x * CHUNK_WIDTH) + x
+                global_y = (chunk_y * CHUNK_HEIGHT) + y
+
+                # Generate noise value. The library returns values from -0.5 to 0.5.
+                # We normalize it to a 0.0 to 1.0 range for easier use with thresholds.
+                noise_val = self.noise([global_x * scale, global_y * scale])
+                noise_val = (noise_val + 0.5) # Shift to 0-1 range
+
+                # Apply thresholds to determine the base terrain type.
+                if noise_val < 0.35:
+                    chunk_data[y][x] = WATER
+                elif noise_val < 0.65:
+                    # This is our "grassland" area, add features on top.
+                    feature_val = self.feature_noise([global_x * scale * 2, global_y * scale * 2])
+                    feature_val = (feature_val + 0.5)
+                    if feature_val > 0.8:
+                        chunk_data[y][x] = BUSH
+                    else:
+                        chunk_data[y][x] = EMPTY
+                elif noise_val < 0.8:
+                    chunk_data[y][x] = ROCK
+                else:
+                    # Higher elevations are rockier
+                    chunk_data[y][x] = ROCK
+
+        # Draw a border around the chunk to contain the player.
         for x in range(CHUNK_WIDTH):
             chunk_data[0][x] = WALL
             chunk_data[CHUNK_HEIGHT - 1][x] = WALL
@@ -53,25 +89,14 @@ class Map:
             chunk_data[y][0] = WALL
             chunk_data[y][CHUNK_WIDTH - 1] = WALL
 
-        # Sprinkle some random features (rocks and bushes) into the chunk.
-        # We'll place a random number of features to make areas feel different.
-        num_features = random.randint(15, 40)
-        for _ in range(num_features):
-            # Pick a random spot, avoiding the border walls.
-            x = random.randint(1, CHUNK_WIDTH - 2)
-            y = random.randint(1, CHUNK_HEIGHT - 2)
-
-            # Choose a random feature type.
-            feature = random.choice([ROCK, BUSH, BUSH]) # More bushes
-            chunk_data[y][x] = feature
-
         return chunk_data
 
 
-# This block allows for testing the map generation independently.
+# This block allows for testing the new map generation independently.
 if __name__ == '__main__':
-    print("--- Testing Map Generation ---")
-    world_map = Map()
+    print("--- Testing Perlin Noise Map Generation ---")
+    # Use a fixed seed for reproducible test output
+    world_map = Map(seed=123)
 
     # Generate the starting chunk.
     print("Generating chunk (0, 0)...")
@@ -81,10 +106,4 @@ if __name__ == '__main__':
     for row in start_chunk:
         print("".join(row))
 
-    # Verify that the chunk is now stored in the map's cache.
     print(f"\nChunk (0, 0) is now cached: {(0, 0) in world_map.chunks}")
-
-    # Retrieve the chunk again and check if it's the same object,
-    # proving that it's being retrieved from cache instead of regenerated.
-    retrieved_chunk = world_map.get_chunk(0, 0)
-    print(f"Is retrieved chunk the same as the original? {retrieved_chunk is start_chunk}")

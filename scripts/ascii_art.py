@@ -6,6 +6,7 @@ ROCK = 'o'
 BUSH = '*'
 WALL = '#'
 EMPTY = ' '
+WATER = '~'
 
 # More complex structures are defined as dictionaries of multi-line strings.
 # The map generator can then pick from these to place larger features.

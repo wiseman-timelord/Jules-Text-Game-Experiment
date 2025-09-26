@@ -1,27 +1,28 @@
 import subprocess
 import sys
 
-# The 'blessed' library is required for the game's terminal interface.
-# It works across different platforms.
-REQUIRED_PACKAGE = "blessed"
+# The required packages for the game.
+# 'blessed' is for the terminal interface.
+# 'perlin-noise' is for procedural map generation.
+REQUIRED_PACKAGES = ["blessed", "perlin-noise"]
 
 def install_packages():
     """
-    Installs the necessary 'blessed' package directly to the system's Python environment.
+    Installs the necessary packages directly to the system's Python environment.
     """
-    print(f"Attempting to install '{REQUIRED_PACKAGE}'...")
+    print("Attempting to install required packages...")
     try:
-        # Use the current Python interpreter's pip to install the package.
+        # Use the current Python interpreter's pip to install the packages.
         # The --no-input flag prevents pip from prompting for input.
         subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--no-input", REQUIRED_PACKAGE],
+            [sys.executable, "-m", "pip", "install", "--no-input"] + REQUIRED_PACKAGES,
             check=True,
             capture_output=True,
             text=True
         )
-        print(f"Successfully installed '{REQUIRED_PACKAGE}'.")
+        print(f"Successfully installed: {', '.join(REQUIRED_PACKAGES)}.")
     except subprocess.CalledProcessError as e:
-        print(f"Error installing '{REQUIRED_PACKAGE}': {e}")
+        print(f"Error installing packages: {e}")
         print(f"STDOUT: {e.stdout}")
         print(f"STDERR: {e.stderr}")
         sys.exit(1)
