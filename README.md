@@ -8,4 +8,4 @@ I am testing making a procedurally generating text art game...
 - Jules will upload to a new branch.
 
 Notation:
-- There is also new "OK Computer",  I'd like to see what it would do also.
+- There is also new "OK Computer" by `Kimi.Com`,  I'd like to see what it would do also.
