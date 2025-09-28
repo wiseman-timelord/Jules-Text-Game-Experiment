@@ -9,7 +9,7 @@ import venv
 #  Paths – adjust if your project layout is different
 # ------------------------------------------------------------------
 VENV_DIR   = ".venv"
-SETTINGS   = r"data\settings.json"
+SETTINGS = os.path.join("data", "settings.json")
 SETTINGS_TEMPLATE = {"volume": 0.8, "debug": False}   # example content
 
 # ------------------------------------------------------------------
@@ -46,10 +46,10 @@ def install_requirements():
     print("=" * 79, "")
 
     # --- 2.  Manage settings.json -----------------------------------------
-    print("Managing 'data\\settings.json'...")
+    print(f"Managing '{SETTINGS}'...")
     if os.path.isfile(SETTINGS):
         os.remove(SETTINGS)
-        print("Replaced 'data\\settings.json'.")
+        print(f"Replaced '{SETTINGS}'.")
     os.makedirs(os.path.dirname(SETTINGS), exist_ok=True)
     with open(SETTINGS, "w", encoding="utf-8") as fh:
         json.dump(SETTINGS_TEMPLATE, fh, indent=2)
@@ -63,9 +63,14 @@ def install_requirements():
         print("No existing '.venv' directory found. Skipping.")
 
     # --- 4.  Create new venv ----------------------------------------------
-    print("Creating new virtual environment...")
-    venv.create(VENV_DIR, with_pip=True)
-    print(".venv directory Created... OK")
+    print("Creating new virtual environment via subprocess...")
+    try:
+        # Use the same Python executable that is running this script to create the venv.
+        run_stream([sys.executable, "-m", "venv", VENV_DIR])
+        print(".venv directory Created... OK")
+    except subprocess.CalledProcessError:
+        print("\n[CRITICAL ERROR] Failed to create virtual environment.")
+        sys.exit(1)
 
     # --- 5.  Determine python / pip inside venv ---------------------------
     if os.name == "nt":                       # Windows
@@ -74,6 +79,12 @@ def install_requirements():
     else:                                     # macOS / Linux
         venv_python = os.path.join(VENV_DIR, "bin", "python")
         venv_pip    = os.path.join(VENV_DIR, "bin", "pip")
+
+    # --- 5a. Verify venv creation ---
+    if not os.path.exists(venv_python):
+        print("\n[CRITICAL ERROR] Virtual environment creation failed.")
+        print(f"Python executable not found at: {os.path.abspath(venv_python)}")
+        sys.exit(1)
 
     # --- 6.  Upgrade pip ---------------------------------------------------
     print("\nUpgrading pip to latest version...")

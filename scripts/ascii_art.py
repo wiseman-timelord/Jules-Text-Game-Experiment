@@ -7,6 +7,7 @@ BUSH = '*'
 WALL = '#'
 EMPTY = ' '
 WATER = '~'
+PAVEMENT = '.'  # New asset for urban ground cover
 
 # More complex structures are defined as dictionaries of multi-line strings.
 # The map generator can then pick from these to place larger features.
@@ -20,6 +21,12 @@ BUILDINGS = {
         "+----+",
         "|SHOP|",
         "+----+"
+    ],
+    "skyscraper": [
+        " | | ",
+        " | | ",
+        " | | ",
+        "/___\\"
     ],
 }
 
